@@ -1,0 +1,69 @@
+/* style.css */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+#timer-container {
+    font-size: 2rem;
+    margin: 20px 0;
+    font-variant-numeric: tabular-nums;
+}
+
+#grid {
+    display: grid;
+    grid-template-columns: repeat(9, 50px);
+    grid-template-rows: repeat(9, 50px);
+    background-color: #333; /* これが枠線になります */
+    border: 3px solid #333;
+    gap: 1px; /* 基本の細い線 */
+}
+
+input {
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border: none;
+    outline: none;
+    background-color: white;
+    text-align: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+    padding: 0;
+    box-sizing: border-box;
+    display: block;
+}
+
+/* 3列ごとの太線（右側） */
+input:nth-child(9n+3),
+input:nth-child(9n+6) {
+    border-right: 3px solid #333;
+}
+
+/* 3行ごとの太線（下側） */
+input:nth-child(n+19):nth-child(-n+27),
+input:nth-child(n+46):nth-child(-n+54) {
+    border-bottom: 3px solid #333;
+}
+
+input:focus { background-color: #e3f2fd; }
+input.fixed { background-color: #eee; font-weight: bold; cursor: default; }
+
+/* メモモードのデザイン */
+.memo-cell {
+    font-size: 11px !important;
+    color: #777 !important;
+    line-height: 1.1;
+    word-wrap: break-word;
+    padding: 2px !important;
+    text-align: left !important; /* メモっぽく左寄せ */
+}
+
+.controls { margin-top: 20px; display: flex; gap: 15px; align-items: center; }
+button { padding: 10px 20px; cursor: pointer; border-radius: 5px; border: none; background: #333; color: white; }
+button:hover { background: #555; }
