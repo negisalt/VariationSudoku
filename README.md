@@ -1,0 +1,2 @@
+# VariationSudoku
+いろいろな数独
