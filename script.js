@@ -1,38 +1,67 @@
-// script.js
-
-// --- グローバル変数 ---
 const gridElement = document.getElementById('grid');
 const memoCheckbox = document.getElementById('memo-mode');
 const timerDisplay = document.getElementById('timer');
-let solution = []; 
+const urlParams = new URLSearchParams(window.location.search);
+const mode = urlParams.get('mode') || 'vanilla'; // vanilla or diagonal
+
+let solution = [];
 let timerInterval;
 let startTime;
-let hintNum = 30;
 
-// --- 1. 初期化処理 ---
-function initBoard() {
-    gridElement.innerHTML = '';
-    for (let i = 0; i < 81; i++) {
-        const input = document.createElement('input');
-        input.type = 'text'; // メモ入力のためにtextに
-        input.maxLength = 10;
-        input.addEventListener('input', handleInput);
-        gridElement.appendChild(input);
-    }
-    generateSudoku();
-    startTimer();
-}
-
-// --- 2. 数独生成ロジック ---
+// --- 1. ルール判定 ---
 function isValid(board, row, col, num) {
+    // 行と列のチェック
     for (let i = 0; i < 9; i++) {
-        const m = 3 * Math.floor(row / 3) + Math.floor(i / 3);
-        const n = 3 * Math.floor(col / 3) + i % 3;
-        if (board[row][i] === num || board[i][col] === num || board[m][n] === num) return false;
+        if (board[row][i] === num && i !== col) return false;
+        if (board[i][col] === num && i !== row) return false;
+    }
+    // 3x3ブロックのチェック
+    const startRow = Math.floor(row / 3) * 3;
+    const startCol = Math.floor(col / 3) * 3;
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (board[startRow + i][startCol + j] === num && (startRow + i !== row || startCol + j !== col)) {
+                return false;
+            }
+        }
+    }
+    // Diagonal（対角線）ルール
+    if (mode === 'diagonal') {
+        if (row === col) { // 左上→右下
+            for (let i = 0; i < 9; i++) {
+                if (board[i][i] === num && i !== row) return false;
+            }
+        }
+        if (row + col === 8) { // 右上→左下
+            for (let i = 0; i < 9; i++) {
+                if (board[i][8 - i] === num && i !== row) return false;
+            }
+        }
     }
     return true;
 }
 
+// --- 2. 唯一解チェック用ソルバー ---
+function countSolutions(board, count = 0) {
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            if (board[row][col] === 0) {
+                for (let num = 1; num <= 9; num++) {
+                    if (isValid(board, row, col, num)) {
+                        board[row][col] = num;
+                        count = countSolutions(board, count);
+                        board[row][col] = 0;
+                        if (count >= 2) return 2;
+                    }
+                }
+                return count;
+            }
+        }
+    }
+    return count + 1;
+}
+
+// --- 3. 盤面生成アルゴリズム ---
 function solve(board) {
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
@@ -52,48 +81,24 @@ function solve(board) {
     return true;
 }
 
-// 解の個数を数える関数（再帰的に探索し、2つ見つかった時点で止める）
-function countSolutions(board, count = 0) {
-    for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-            if (board[row][col] === 0) {
-                for (let num = 1; num <= 9; num++) {
-                    if (isValid(board, row, col, num)) {
-                        board[row][col] = num;
-                        count = countSolutions(board, count);
-                        board[row][col] = 0;
-                        if (count >= 2) return count; // 2つ以上あれば唯一解ではない
-                    }
-                }
-                return count;
-            }
-        }
-    }
-    return count + 1;
-}
-
 function generateSudoku() {
-    // 1. まず完成盤面を作る
     let board = Array.from({ length: 9 }, () => Array(9).fill(0));
-    solve(board);
+    solve(board); 
     solution = board.map(row => [...row]);
 
-    // 2. 消す順番をランダムに決める（0〜80の配列をシャッフル）
+    let targetHints = parseInt(document.getElementById('difficulty-level').value);
+    // Diagonalモードは制約が強いため、ヒントを削りすぎると生成が止まるのを防ぐ
+    if (mode === 'diagonal') targetHints = Math.max(targetHints, 28);
+
     let cellIndices = [...Array(81).keys()].sort(() => Math.random() - 0.5);
-
-    // 3. 可能な限り数字を消していく
-    // 目標のヒント数（例：30個程度）を設定することも可能ですが、
     let hintsCount = 81;
-    for (let i of cellIndices) {
-        if (hintsCount <= hintNum) break;
 
-        let r = Math.floor(i / 9);
-        let c = i % 9;
-        
+    for (let i of cellIndices) {
+        if (hintsCount <= targetHints) break;
+        let r = Math.floor(i / 9), c = i % 9;
         let backup = board[r][c];
         board[r][c] = 0;
 
-        // 答えが1つより多くなるなら、消しちゃダメなので戻す
         if (countSolutions(board.map(row => [...row])) !== 1) {
             board[r][c] = backup;
         } else {
@@ -101,7 +106,6 @@ function generateSudoku() {
         }
     }
 
-    // 4. 画面に反映
     const inputs = gridElement.querySelectorAll('input');
     inputs.forEach((input, i) => {
         const r = Math.floor(i / 9), c = i % 9;
@@ -117,44 +121,85 @@ function generateSudoku() {
             input.classList.add('fixed');
         }
     });
+    updateNumberCounts();
 }
 
-// --- 3. ユーザー入力ハンドラ ---
+// --- 4. 数字の使用状況カウント ---
+function updateNumberCounts() {
+    const inputs = gridElement.querySelectorAll('input');
+    const counts = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0};
+
+    inputs.forEach(input => {
+        if (!input.classList.contains('memo-cell') && input.value >= 1 && input.value <= 9) {
+            counts[input.value]++;
+        }
+    });
+
+    document.querySelectorAll('.num-status').forEach(status => {
+        const num = status.dataset.num;
+        const countSpan = status.querySelector('.count');
+        countSpan.textContent = counts[num];
+        if (counts[num] >= 9) status.classList.add('completed');
+        else status.classList.remove('completed');
+    });
+}
+
+// --- 5. イベントハンドラ ---
 function handleInput(e) {
     const input = e.target;
     if (input.readOnly) return;
-
-    const rawValue = input.value.replace(/[^1-9]/g, '');
-    const lastChar = rawValue.slice(-1);
-
+    const val = input.value.replace(/[^1-9]/g, '').slice(-1);
+    
     if (memoCheckbox.checked) {
-        // メモモード：数字をトグルして並べる
         input.classList.add('memo-cell');
-        let currentMemos = input.dataset.memos ? input.dataset.memos.split('') : [];
-        if (lastChar) {
-            if (currentMemos.includes(lastChar)) {
-                currentMemos = currentMemos.filter(m => m !== lastChar);
-            } else {
-                currentMemos.push(lastChar);
-            }
-            currentMemos.sort();
-            input.dataset.memos = currentMemos.join('');
-            input.value = currentMemos.join(' ');
+        let memos = input.dataset.memos ? input.dataset.memos.split('') : [];
+        if (val) {
+            if (memos.includes(val)) memos = memos.filter(m => m !== val);
+            else memos.push(val);
+            memos.sort();
+            input.dataset.memos = memos.join('');
+            input.value = memos.join(' ');
         }
     } else {
-        // 通常モード：すでに入っている数字と同じ数字を打ったら消去する
-        if (input.dataset.lastValue === lastChar && lastChar !== "") {
-            input.value = "";
-            input.dataset.lastValue = "";
-        } else {
-            input.value = lastChar;
-            input.dataset.lastValue = lastChar;
-        }
         input.classList.remove('memo-cell');
+        input.dataset.memos = "";
+        input.value = val;
     }
+    updateNumberCounts();
 }
 
-// --- 4. 判定・タイマー機能 ---
+// キーボード操作
+document.addEventListener('keydown', (e) => {
+    const inputs = Array.from(gridElement.querySelectorAll('input'));
+    let idx = inputs.indexOf(document.activeElement);
+
+    if (e.key.startsWith('Arrow')) {
+        e.preventDefault();
+        if (idx === -1) { inputs[0].focus(); return; }
+        if (e.key === 'ArrowUp') idx -= 9;
+        if (e.key === 'ArrowDown') idx += 9;
+        if (e.key === 'ArrowLeft') idx -= 1;
+        if (e.key === 'ArrowRight') idx += 1;
+        if (idx >= 0 && idx < 81) inputs[idx].focus();
+    }
+    if (e.key === 'Shift') {
+        memoCheckbox.checked = !memoCheckbox.checked;
+        document.body.classList.toggle('memo-active', memoCheckbox.checked);
+    }
+});
+
+// タイマー・システム
+function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+        const diff = Math.floor((Date.now() - startTime) / 1000);
+        const m = String(Math.floor(diff / 60)).padStart(2, '0');
+        const s = String(diff % 60).padStart(2, '0');
+        timerDisplay.textContent = `${m}:${s}`;
+    }, 1000);
+}
+
 function checkAnswer() {
     const inputs = gridElement.querySelectorAll('input');
     let win = true;
@@ -169,26 +214,34 @@ function checkAnswer() {
     });
     if (win) {
         clearInterval(timerInterval);
-        alert(`正解です！ タイム: ${timerDisplay.textContent}`);
+        alert(`おめでとうございます！ 正解です！ タイム: ${timerDisplay.textContent}`);
     } else {
         alert("間違っているか、埋まっていないマスがあります。");
     }
 }
 
-function startTimer() {
-    if (timerInterval) clearInterval(timerInterval);
-    startTime = Date.now();
-    timerInterval = setInterval(() => {
-        const diff = Math.floor((Date.now() - startTime) / 1000);
-        const m = String(Math.floor(diff / 60)).padStart(2, '0');
-        const s = String(diff % 60).padStart(2, '0');
-        timerDisplay.textContent = `${m}:${s}`;
-    }, 1000);
-}
-
 function resetGame() {
-    if (confirm("新しくゲームを開始しますか？")) initBoard();
+    if (confirm("新しくパズルを作成しますか？")) initBoard();
 }
 
-// 起動
+// --- 6. 初期化 ---
+function initBoard() {
+    gridElement.innerHTML = '';
+    const titleText = mode === 'diagonal' ? 'Sudoku: Diagonal' : 'Sudoku: Vanilla';
+    document.getElementById('game-title').textContent = titleText;
+
+    for (let i = 0; i < 81; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        const r = Math.floor(i / 9), c = i % 9;
+        if (mode === 'diagonal' && (r === c || r + c === 8)) {
+            input.classList.add('diag-cell');
+        }
+        input.addEventListener('input', handleInput);
+        gridElement.appendChild(input);
+    }
+    generateSudoku();
+    startTimer();
+}
+
 initBoard();

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Sudoku Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="game-page"> <nav class="top-nav">
+        <a href="index.html" class="back-link">← タイトルへ戻る</a>
+        <h1 id="game-title">Sudoku: Vanilla</h1>
+    </nav>
+
+    <div id="timer-container">Time: <span id="timer">00:00</span></div>
+
+    <div id="sudoku-container">
+        <div id="grid"></div>
+    </div>
+
+    <div class="difficulty-selector">
+        難易度: 
+        <select id="difficulty-level">
+            <option value="42">簡単 (ヒント42個)</option>
+            <option value="35" selected>ふつう (ヒント35個)</option>
+            <option value="28">難しい (ヒント28個)</option>
+        </select>
+    </div>
+
+    <div id="number-status-container">
+        <div class="num-status" data-num="1">1: <span class="count">0</span></div>
+        <div class="num-status" data-num="2">2: <span class="count">0</span></div>
+        <div class="num-status" data-num="3">3: <span class="count">0</span></div>
+        <div class="num-status" data-num="4">4: <span class="count">0</span></div>
+        <div class="num-status" data-num="5">5: <span class="count">0</span></div>
+        <div class="num-status" data-num="6">6: <span class="count">0</span></div>
+        <div class="num-status" data-num="7">7: <span class="count">0</span></div>
+        <div class="num-status" data-num="8">8: <span class="count">0</span></div>
+        <div class="num-status" data-num="9">9: <span class="count">0</span></div>
+    </div>
+
+    <div class="controls">
+        <label class="switch">
+            <input type="checkbox" id="memo-mode">
+            <span class="slider"></span> メモモード (Shiftキーで切替)
+        </label>
+        <button onclick="checkAnswer()">答え合わせ</button>
+        <button onclick="resetGame()">新しく作る</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

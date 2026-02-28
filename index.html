@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Sudoku Collection</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* メニュー専用のスタイル */
+        .menu-container {
+            text-align: center;
+            margin-top: 100px;
+        }
+        .difficulty-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: #333;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+        .card h2 { margin: 0 0 10px 0; color: #1976d2; }
+        .tag {
+            font-size: 12px;
+            background: #e0e0e0;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-container">
+        <h1>Sudoku Collection</h1>
+        <p>解きたいパズルを選択してください</p>
+
+        <div class="difficulty-grid">
+            <a href="game.html?mode=vanilla" class="card">
+                <span class="tag">Standard</span>
+                <h2>Vanilla</h2>
+                <p>最もスタンダードな<br>9x9の数独です。</p>
+            </a>
+
+            <a href="game.html?mode=diagonal" class="card">
+                <span class="tag">アレンジ</span>
+                <h2>Diagonal</h2>
+                <p>対角線の2本にも<br>1〜9の重複を許さない数独</p>
+                </a>
+        </div>
+    </div>
+</body>
+</html>
