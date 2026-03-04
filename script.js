@@ -8,36 +8,53 @@ let solution = [];
 let timerInterval;
 let startTime;
 
-// --- 1. ルール判定 ---
+// --- 1. ルール判定 (Extra Regions対応) ---
 function isValid(board, row, col, num) {
-    // 行と列のチェック
+    // A. 標準ルール (行・列・通常の3x3ブロック)
     for (let i = 0; i < 9; i++) {
         if (board[row][i] === num && i !== col) return false;
         if (board[i][col] === num && i !== row) return false;
     }
-    // 3x3ブロックのチェック
     const startRow = Math.floor(row / 3) * 3;
     const startCol = Math.floor(col / 3) * 3;
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
-            if (board[startRow + i][startCol + j] === num && (startRow + i !== row || startCol + j !== col)) {
-                return false;
-            }
+            if (board[startRow + i][startCol + j] === num && (startRow + i !== row || startCol + j !== col)) return false;
         }
     }
-    // Diagonal（対角線）ルール
+
+    // B. Diagonalモード用ルール (既存)
     if (mode === 'diagonal') {
-        if (row === col) { // 左上→右下
-            for (let i = 0; i < 9; i++) {
-                if (board[i][i] === num && i !== row) return false;
-            }
-        }
-        if (row + col === 8) { // 右上→左下
-            for (let i = 0; i < 9; i++) {
-                if (board[i][8 - i] === num && i !== row) return false;
+        if (row === col) { for (let i = 0; i < 9; i++) if (board[i][i] === num && i !== row) return false; }
+        if (row + col === 8) { for (let i = 0; i < 9; i++) if (board[i][8 - i] === num && i !== row) return false; }
+    }
+
+    // C. Extra Regions (j, k, l, m) ルール
+    if (mode === 'extra') {
+        // 追加される4つの3x3エリアの左上座標を定義
+        const extraRegions = [
+            {r: 1, c: 1}, // j
+            {r: 1, c: 5}, // k
+            {r: 5, c: 1}, // l
+            {r: 5, c: 5}  // m
+        ];
+
+        for (let region of extraRegions) {
+            // 現在のマスがこの追加リージョン内に含まれるかチェック
+            if (row >= region.r && row < region.r + 3 && col >= region.c && col < region.c + 3) {
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        const targetR = region.r + i;
+                        const targetC = region.c + j;
+                        if (board[targetR][targetC] === num && (targetR !== row || targetC !== col)) {
+                            return false;
+                        }
+                    }
+                }
             }
         }
     }
+
     return true;
 }
 
@@ -227,16 +244,28 @@ function resetGame() {
 // --- 6. 初期化 ---
 function initBoard() {
     gridElement.innerHTML = '';
-    const titleText = mode === 'diagonal' ? 'Sudoku: Diagonal' : 'Sudoku: Vanilla';
+    const titleText = mode === 'extra' ? 'Sudoku: Extra Regions' : (mode === 'diagonal' ? 'Sudoku: Diagonal' : 'Sudoku: Vanilla');
     document.getElementById('game-title').textContent = titleText;
 
     for (let i = 0; i < 81; i++) {
         const input = document.createElement('input');
         input.type = 'text';
         const r = Math.floor(i / 9), c = i % 9;
-        if (mode === 'diagonal' && (r === c || r + c === 8)) {
-            input.classList.add('diag-cell');
+
+        // Diagonal判定
+        if (mode === 'diagonal' && (r === c || r + c === 8)) input.classList.add('diag-cell');
+
+        // Extra Regions判定 (j, k, l, m)
+        if (mode === 'extra') {
+            const isJ = (r >= 1 && r <= 3 && c >= 1 && c <= 3);
+            const isK = (r >= 1 && r <= 3 && c >= 5 && c <= 7);
+            const isL = (r >= 5 && r <= 7 && c >= 1 && c <= 3);
+            const isM = (r >= 5 && r <= 7 && c >= 5 && c <= 7);
+            if (isJ || isK || isL || isM) {
+                input.classList.add('extra-cell');
+            }
         }
+
         input.addEventListener('input', handleInput);
         gridElement.appendChild(input);
     }
