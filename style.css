@@ -85,6 +85,16 @@ input.fixed {
     background-color: #e3f2fd !important;
 }
 
+/* 追加リージョンの背景色（少し落ち着いた色に） */
+.extra-cell {
+    background-color: #fce4ec !important; /* 薄いピンク */
+}
+
+/* 通常の3x3ブロックの境界と重なっても見やすいように調整 */
+input.extra-cell:focus {
+    background-color: #f8bbd0 !important;
+}
+
 /* フォーカス時 */
 input:focus {
     background-color: #bbdefb !important;
