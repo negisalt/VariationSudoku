@@ -95,6 +95,43 @@ input.extra-cell:focus {
     background-color: #f8bbd0 !important;
 }
 
+/* 不等号のベーススタイル */
+.grid-cell-container {
+    position: relative; /* 不等号を絶対配置するための基準 */
+}
+
+/* 右側への不等号 (縦線の上) */
+.ineq-right::after, .ineq-left::after {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    font-weight: bold;
+    color: #f44336; /* 目立つ赤色 */
+    pointer-events: none; /* 入力の邪魔をしない */
+    background: white; /* 枠線の上で読みやすくする */
+    padding: 0 2px;
+}
+
+.ineq-right::after { content: ">"; right: -6px; }
+.ineq-left::after { content: "<"; right: -6px; }
+
+/* 下側への不等号 (横線の上) */
+.ineq-down::after, .ineq-up::after {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    font-weight: bold;
+    color: #f44336;
+    pointer-events: none;
+    background: white;
+    padding: 2px 0;
+}
+
+.ineq-down::after { content: "∨"; bottom: -10px; }
+.ineq-up::after { content: "∧"; bottom: -10px; }
+
 /* フォーカス時 */
 input:focus {
     background-color: #bbdefb !important;
