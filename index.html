@@ -1,15 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <title>Sudoku Collection</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        /* メニュー専用のスタイル */
-        .menu-container {
-            text-align: center;
-            margin-top: 100px;
-        }
+        .menu-container { text-align: center; margin-top: 100px; }
         .difficulty-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -27,47 +23,35 @@
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
-        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 12px rgba(0,0,0,0.15); }
         .card h2 { margin: 0 0 10px 0; color: #1976d2; }
-        .tag {
-            font-size: 12px;
-            background: #e0e0e0;
-            padding: 3px 8px;
-            border-radius: 10px;
-        }
+        .tag { font-size: 12px; background: #e0e0e0; padding: 3px 8px; border-radius: 10px; }
     </style>
 </head>
 <body>
     <div class="menu-container">
         <h1>Sudoku Collection</h1>
-        <p>解きたいパズルを選択してください</p>
-
+        <p>バリエーション豊かな数独を楽しみましょう！</p>
         <div class="difficulty-grid">
             <a href="game.html?mode=vanilla" class="card">
                 <span class="tag">スタンダード</span>
                 <h2>Vanilla</h2>
-                <p>最もスタンダードな<br>9x9の数独です。</p>
+                <p>通常の数独ルールです。</p>
             </a>
-
             <a href="game.html?mode=diagonal" class="card">
-                <span class="tag">アレンジ</span>
+                <span class="tag">チャレンジ</span>
                 <h2>Diagonal</h2>
-                <p>対角線の2本にも<br>1〜9の重複を許さない数独</p>
+                <p>対角線上にも1から9の数字が入ります。</p>
             </a>
-
             <a href="game.html?mode=extra" class="card">
-                <span class="tag">上級</span>
+                <span class="tag">変則エリア</span>
                 <h2>Extra Regions</h2>
-                <p>中央付近に4つの<br>追加ブロックがある数独</p>
+                <p>指定された4つの追加エリアも1から9が入ります。</p>
             </a>
-            <br>
             <a href="game.html?mode=inequality" class="card">
-                <span class="tag">不等号</span>
+                <span class="tag">不等号数独</span>
                 <h2>Inequality</h2>
-                <p>不等号を<br>使った数独</p>
+                <p>不等号の条件を満たすように数字を埋めます。</p>
             </a>
         </div>
     </div>

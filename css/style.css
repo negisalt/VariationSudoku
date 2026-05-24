@@ -1,0 +1,177 @@
+﻿/* --- 全体レイアウト --- */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    transition: background-color 0.3s;
+}
+
+body.memo-active {
+    background-color: #fff9c4;
+}
+
+/* --- ナビゲーション --- */
+.top-nav {
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#timer-container {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* --- 数独グリッド --- */
+#grid {
+    display: grid;
+    grid-template-columns: repeat(9, 50px);
+    grid-template-rows: repeat(9, 50px);
+    background-color: #333;
+    border: 4px solid #333;
+    gap: 1px;
+    position: relative;
+    overflow: visible;
+}
+
+.cell-container {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    background-color: #fff;
+    box-sizing: border-box;
+    z-index: 1;
+}
+
+/* 3x3ブロックの境界線（ボックスシャドウからボーダーに変更して確実に表示） */
+/* 右側の境界線 */
+.cell-container:nth-child(3n):not(:nth-child(9n)) {
+    border-right: 3px solid #333;
+}
+/* 下側の境界線 */
+.cell-container:nth-child(n+19):nth-child(-n+27),
+.cell-container:nth-child(n+46):nth-child(-n+54) {
+    border-bottom: 3px solid #333;
+}
+
+.cell-container input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-size: 24px;
+    outline: none;
+    position: relative;
+    z-index: 2;
+}
+
+/* --- モード別背景色 --- */
+.cell-container.diag-cell {
+    background-color: #e3f2fd !important;
+}
+.cell-container.extra-cell {
+    background-color: #fce4ec !important;
+}
+
+.cell-container.fixed-bg {
+    background-color: #f0f0f0;
+}
+
+.cell-container:focus-within {
+    background-color: #bbdefb !important;
+}
+
+/* --- 不等号のスタイル --- */
+.ineq-h, .ineq-v {
+    position: absolute;
+    display: none;
+    color: #d32f2f;
+    font-weight: 900;
+    font-size: 18px;
+    z-index: 10;
+    pointer-events: none;
+    line-height: 1;
+    text-shadow: 0 0 2px white;
+}
+
+.ineq-h.show, .ineq-v.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ineq-h {
+    right: -10px;
+    top: 16px;
+    width: 20px;
+    height: 18px;
+}
+
+.ineq-v {
+    bottom: -11px;
+    left: 15px;
+    width: 20px;
+    height: 20px;
+}
+
+/* --- その他 --- */
+input.fixed {
+    font-weight: bold;
+    color: #000;
+}
+
+.memo-cell {
+    font-size: 11px !important;
+    line-height: 1.1 !important;
+    color: #666 !important;
+}
+
+#number-status-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px 0;
+    max-width: 460px;
+}
+
+.num-status {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.num-status.completed {
+    background-color: #4caf50;
+    color: white;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}

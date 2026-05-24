@@ -1,29 +1,85 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <title>Sudoku Game</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .difficulty-container {
+            width: 100%;
+            max-width: 460px;
+            margin: 10px 0;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .slider-group {
+            margin-bottom: 15px;
+        }
+        .slider-group:last-child {
+            margin-bottom: 0;
+        }
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        input[type="range"] {
+            flex-grow: 1;
+            cursor: pointer;
+        }
+        .slider-value {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #1976d2;
+            min-width: 35px;
+            text-align: right;
+        }
+        .slider-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        #inequality-config {
+            display: none; /* 初期状態は非表示 */
+        }
+    </style>
 </head>
-<body class="game-page"> <nav class="top-nav">
-        <a href="index.html" class="back-link">← タイトルへ戻る</a>
-        <h1 id="game-title">Sudoku: Vanilla</h1>
+<body class="game-page">
+    <nav class="top-nav">
+        <a href="index.html" class="back-link">← メニューに戻る</a>
+        <h1 id="game-title">Sudoku</h1>
     </nav>
-
     <div id="timer-container">Time: <span id="timer">00:00</span></div>
+    <div id="sudoku-container"><div id="grid"></div></div>
+    
+    <div class="difficulty-container">
+        <!-- 数字のヒント数設定 -->
+        <div class="slider-group">
+            <div class="slider-label">
+                <span>数字のヒント数</span>
+                <span id="difficulty-text">ふつう</span>
+            </div>
+            <div class="slider-wrapper">
+                <input type="range" id="hint-slider" min="0" max="81" value="35">
+                <span id="hint-value" class="slider-value">35</span>
+            </div>
+        </div>
 
-    <div id="sudoku-container">
-        <div id="grid"></div>
-    </div>
-
-    <div class="difficulty-selector">
-        難易度: 
-        <select id="difficulty-level">
-            <option value="39">やさしめ：39</option>
-            <option value="35" selected>普通：35</option>
-            <option value="31">難しい：31</option>
-            <option value="27">厳しい：27</option>
-        </select>
+        <!-- 不等号の数設定 (不等号モードのみ表示) -->
+        <div id="inequality-config" class="slider-group">
+            <div class="slider-label">
+                <span>不等号の数</span>
+                <span>推奨: 20-40</span>
+            </div>
+            <div class="slider-wrapper">
+                <input type="range" id="ineq-slider" min="1" max="60" value="40">
+                <span id="ineq-value" class="slider-value">40</span>
+            </div>
+        </div>
     </div>
 
     <div id="number-status-container">
@@ -37,16 +93,14 @@
         <div class="num-status" data-num="8">8: <span class="count">0</span></div>
         <div class="num-status" data-num="9">9: <span class="count">0</span></div>
     </div>
-
     <div class="controls">
-        <label class="switch">
-            <input type="checkbox" id="memo-mode">
-            <span class="slider"></span> メモモード (Shiftキーで切替)
-        </label>
+        <label><input type="checkbox" id="memo-mode"> メモモード (Shift)</label>
         <button onclick="checkAnswer()">答え合わせ</button>
-        <button onclick="resetGame()">新しく作る</button>
+        <button onclick="resetGame()">パズル再生成</button>
     </div>
-
-    <script src="script.js"></script>
+    <script src="js/core/SudokuCore.js"></script>
+    <script src="js/modes/SudokuModes.js"></script>
+    <script src="js/ui/SudokuUI.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
