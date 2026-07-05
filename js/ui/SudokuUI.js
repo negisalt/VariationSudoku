@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Sudoku UI Controller
  * DOM操作、イベントハンドリング、レンダリング
  */
@@ -28,6 +28,11 @@ class SudokuUI {
                 const isExtra = (r >= 1 && r <= 3 && c >= 1 && c <= 3) || (r >= 1 && r <= 3 && c >= 5 && c <= 7) ||
                                 (r >= 5 && r <= 7 && c >= 1 && c <= 3) || (r >= 5 && r <= 7 && c >= 5 && c <= 7);
                 if (isExtra) container.classList.add('extra-cell');
+            }
+            if (this.core.mode === 'triple') {
+                if (this.core.solution && this.core.solution[r] && this.core.solution[r][c] % 3 === 0) {
+                    container.classList.add('triple-cell');
+                }
             }
 
             const input = document.createElement('input');

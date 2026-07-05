@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Mode Registry
  */
 const SudokuModes = {
@@ -75,6 +75,22 @@ const SudokuModes = {
                 });
             });
         }
+    },
+    triple: {
+        minHints: 10, maxHints: 35, defaultHints: 20,
+        isValid: (core, board, r, c, n) => {
+            if (!core.isValid(board, r, c, n)) return false;
+            if (core.solution && core.solution.length > 0) {
+                const isTripleCell = (core.solution[r][c] % 3 === 0);
+                const isNumTriple = (n % 3 === 0);
+                if (isTripleCell !== isNumTriple) return false;
+            }
+            return true;
+        },
+        onInit: (core) => {
+            core.solution = [];
+        },
+        onGenerate: (core, board) => {}
     }
 };
 
