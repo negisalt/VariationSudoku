@@ -1,4 +1,4 @@
-﻿/* --- 全体レイアウト --- */
+/* --- 全体レイアウト --- */
 body {
     font-family: 'Helvetica Neue', Arial, sans-serif;
     display: flex;
@@ -81,6 +81,9 @@ body.memo-active {
 }
 .cell-container.extra-cell {
     background-color: #fce4ec !important;
+}
+.cell-container.triple-cell {
+    background-color: #e8f5e9 !important;
 }
 
 .cell-container.fixed-bg {
