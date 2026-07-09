@@ -39,7 +39,7 @@ const SudokuModes = {
         onGenerate: (core, board) => {}
     },
     inequality: {
-        minHints: 0, maxHints: 30, defaultHints: 15,
+        minHints: 0, maxHints: 40, defaultHints: 20,
         isValid: (core, board, r, c, n) => {
             if (!core.isValid(board, r, c, n)) return false;
             for (let ineq of core.inequalities) {
